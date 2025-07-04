@@ -13,6 +13,8 @@ const Navbar = () => {
 
   const user = useSelector((state) => state.user);
 
+
+
   const dispatch = useDispatch();
 
   const [search, setSearch] = useState("")
@@ -64,35 +66,37 @@ const Navbar = () => {
                 "public",
                 ""
               )}`}
-              alt="profile photo"
+              alt="pp"
               style={{ objectFit: "cover", borderRadius: "50%" }}
             />
           )}
         </button>
 
-        {dropdownMenu && !user && (
+        {dropdownMenu && (
           <div className="navbar_right_accountmenu">
-            <Link to="/login">Log In</Link>
-            <Link to="/register">Sign Up</Link>
-          </div>
-        )}
+            {!user ? (
+              <>
+                <Link to="/login">Log In</Link>
+                <Link to="/register">Sign Up</Link>
+              </>
+            ) : (
+              <>
+                <Link to={`/${user._id}/trips`}>Trip List</Link>
+                <Link to={`/${user._id}/wishList`}>Wish List</Link>
+                <Link to={`/${user._id}/properties`}>Property List</Link>
+                <Link to={`/${user._id}/reservations`}>Reservation List</Link>
+                <Link to="/create-listing">Become A Host</Link>
 
-        {dropdownMenu && user && (
-          <div className="navbar_right_accountmenu">
-            <Link to={`/${user._id}/trips`}>Trip List</Link>
-            <Link to={`/${user._id}/wishList`}>Wish List</Link>
-            <Link to={`/${user._id}/properties`}>Property List</Link>
-            <Link to={`/${user._id}/reservations`}>Reservation List</Link>
-            <Link to="/create-listing">Become A Host</Link>
-
-            <Link
-              to="/login"
-              onClick={() => {
-                dispatch(setLogout());
-              }}
-            >
-              Log Out
-            </Link>
+                <Link
+                  to="/login"
+                  onClick={() => {
+                    dispatch(setLogout());
+                  }}
+                >
+                  Log Out
+                </Link>
+              </>
+            )}
           </div>
         )}
       </div>

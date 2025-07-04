@@ -25,16 +25,19 @@ const LoginPage = () => {
       })
 
       /* Get data after fetching */
-      const loggedIn = await response.json()
+      const data = await response.json()
 
-      if (loggedIn) {
+      if (response.ok) {
         dispatch (
           setLogin({
-            user: loggedIn.user,
-            token: loggedIn.token
+            user: data.user,
+            token: data.token
           })
         )
         navigate("/")
+      } else {
+        console.log("Login failed:", data.message)
+        // You can add error handling here (show error message to user)
       }
 
     } catch (err) {

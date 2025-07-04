@@ -43,9 +43,19 @@ const RegisterPage = () => {
         method: "POST",
         body: register_form
       })
+      
+      let data;
+      try {
+        data = await response.json()
+      } catch (error) {
+        console.log("Failed to parse response as JSON:", error)
+        return
+      }
 
       if (response.ok) {
         navigate("/login")
+      } else {
+        console.log(data.message)
       }
     } catch (err) {
       console.log("Registration failed", err.message)
@@ -106,7 +116,6 @@ const RegisterPage = () => {
             accept="image/*"
             style={{ display: "none" }}
             onChange={handleChange}
-            required
           />
           <label htmlFor="image">
             <img src="/assets/addImage.png" alt="add profile photo" />
