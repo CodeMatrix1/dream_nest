@@ -13,7 +13,6 @@ import Footer from "../components/Footer";
 
 const ListingDetails = () => {
   const [loading, setLoading] = useState(true);
-
   const { listingId } = useParams();
   const [listing, setListing] = useState(null);
 
@@ -21,11 +20,8 @@ const ListingDetails = () => {
     try {
       const response = await fetch(
         `http://localhost:3001/properties/${listingId}`,
-        {
-          method: "GET",
-        }
+        { method: "GET" }
       );
-
       const data = await response.json();
       setListing(data);
       setLoading(false);
@@ -38,29 +34,28 @@ const ListingDetails = () => {
     getListingDetails();
   }, []);
 
-  console.log(listing);
+  // Debugging logs
+  console.log("Listing data:", listing);
+  console.log("Host profileImagePath:", listing?.creator?.profileImagePath);
 
   /* BOOKING CALENDAR */
   const [dateRange, setDateRange] = useState([
-    {
-      startDate: new Date(),
-      endDate: new Date(),
-      key: "selection",
-    },
+    { startDate: new Date(), endDate: new Date(), key: "selection" },
   ]);
 
   const handleSelect = (ranges) => {
-    // Update the selected date range when user makes a selection
     setDateRange([ranges.selection]);
   };
 
   const start = new Date(dateRange[0].startDate);
   const end = new Date(dateRange[0].endDate);
-  const dayCount = Math.round(end - start) / (1000 * 60 * 60 * 24); // Calculate the difference in day unit
+  const dayCount = Math.max(
+    1,
+    Math.round((end - start) / (1000 * 60 * 60 * 24))
+  );
 
   /* SUBMIT BOOKING */
   const customerId = useSelector((state) => state?.user?._id);
-
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
@@ -68,17 +63,15 @@ const ListingDetails = () => {
       const bookingForm = {
         customerId,
         listingId,
-        hostId: listing.creator._id,
+        hostId: listing?.creator?._id,
         startDate: dateRange[0].startDate.toDateString(),
         endDate: dateRange[0].endDate.toDateString(),
-        totalPrice: listing.price * dayCount,
+        totalPrice: listing?.price * dayCount,
       };
 
       const response = await fetch("http://localhost:3001/bookings/create", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookingForm),
       });
 
@@ -90,84 +83,84 @@ const ListingDetails = () => {
     }
   };
 
-  return loading ? (
-    <Loader />
-  ) : (
+  if (loading) return <Loader />;
+
+  // Safe image paths
+  const hostImage = "/assets/pp.png";
+
+  return (
     <>
       <Navbar />
 
       <div className="listing-details">
         <div className="title">
-          <h1>{listing.title}</h1>
-          <div></div>
+          <h1>{listing?.title || "Listing Title"}</h1>
         </div>
 
         <div className="photos">
-          {listing.listingPhotoPaths?.map((item) => (
-            <img
-              src={
-                item
+          {listing?.listingPhotoPaths?.length > 0 ? (
+            listing.listingPhotoPaths.map((item) => {
+              const src =
+                typeof item === "string" && item.length > 0
                   ? `http://localhost:3001/${item.replace("public", "")}`
-                  : "/assets/default-listing.png"
-              }
-              alt="listing photo"
-            />
-          ))}
+                  : "/assets/slide.png";
+              return (
+                <img
+                  key={item || Math.random()}
+                  src={src}
+                  alt="listing photo"
+                />
+              );
+            })
+          ) : (
+            <img src="/assets/slide.png" alt="listing photo" />
+          )}
         </div>
 
         <h2>
-          {listing.type} in {listing.city}, {listing.province},{" "}
-          {listing.country}
+          {listing?.type || ""} in {listing?.city || ""},{" "}
+          {listing?.province || ""}, {listing?.country || ""}
         </h2>
         <p>
-          {listing.guestCount} guests - {listing.bedroomCount} bedroom(s) -{" "}
-          {listing.bedCount} bed(s) - {listing.bathroomCount} bathroom(s)
+          {listing?.guestCount || 0} guests - {listing?.bedroomCount || 0}{" "}
+          bedroom(s) - {listing?.bedCount || 0} bed(s) -{" "}
+          {listing?.bathroomCount || 0} bathroom(s)
         </p>
         <hr />
 
         <div className="profile">
-          <img
-            src={
-              listing.creator &&
-              typeof listing.creator.profileImagePath === "string" &&
-              listing.creator.profileImagePath.length > 0
-                ? `http://localhost:3001/${listing.creator.profileImagePath.replace(
-                    "public",
-                    ""
-                  )}`
-                : "/assets/pp.png"
-            }
-            alt="host"
-          />
+          <img src={hostImage} alt="host" />
           <h3>
-            Hosted by {listing.creator.firstName} {listing.creator.lastName}
+            Hosted by {listing?.creator?.firstName || "Unknown"}{" "}
+            {listing?.creator?.lastName || ""}
           </h3>
         </div>
         <hr />
 
         <h3>Description</h3>
-        <p>{listing.description}</p>
+        <p>{listing?.description || "No description available."}</p>
         <hr />
 
-        <h3>{listing.highlight}</h3>
-        <p>{listing.highlightDesc}</p>
+        <h3>{listing?.highlight || ""}</h3>
+        <p>{listing?.highlightDesc || ""}</p>
         <hr />
 
         <div className="booking">
           <div>
             <h2>What this place offers?</h2>
             <div className="amenities">
-              {listing.amenities[0].split(",").map((item, index) => (
-                <div className="facility" key={index}>
-                  <div className="facility_icon">
-                    {
-                      facilities.find((facility) => facility.name === item)
-                        ?.icon
-                    }
+              {listing?.amenities?.[0]?.split(",").length > 0 ? (
+                listing.amenities[0].split(",").map((item) => (
+                  <div className="facility" key={item}>
+                    <div className="facility_icon">
+                      {facilities.find((f) => f.name === item)?.icon}
+                    </div>
+                    <p>{item}</p>
                   </div>
-                  <p>{item}</p>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p>No amenities listed</p>
+              )}
             </div>
           </div>
 
@@ -175,17 +168,11 @@ const ListingDetails = () => {
             <h2>How long do you want to stay?</h2>
             <div className="date-range-calendar">
               <DateRange ranges={dateRange} onChange={handleSelect} />
-              {dayCount > 1 ? (
-                <h2>
-                  ${listing.price} x {dayCount} nights
-                </h2>
-              ) : (
-                <h2>
-                  ${listing.price} x {dayCount} night
-                </h2>
-              )}
-
-              <h2>Total price: ${listing.price * dayCount}</h2>
+              <h2>
+                ${listing?.price || 0} x {dayCount}{" "}
+                {dayCount > 1 ? "nights" : "night"}
+              </h2>
+              <h2>Total price: ${listing?.price * dayCount || 0}</h2>
               <p>Start Date: {dateRange[0].startDate.toDateString()}</p>
               <p>End Date: {dateRange[0].endDate.toDateString()}</p>
 

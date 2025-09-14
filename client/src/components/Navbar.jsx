@@ -7,19 +7,20 @@ import "../styles/Navbar.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { setLogout } from "../redux/state";
 
-
 const Navbar = () => {
   const [dropdownMenu, setDropdownMenu] = useState(false);
 
   const user = useSelector((state) => state.user);
 
-
-
   const dispatch = useDispatch();
 
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState("");
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const imagePath = user.profileImagePath
+    ? user.profileImagePath.replace("public\\", "")
+    : "/assets/pp.png"; // fallback image path
 
   return (
     <div className="navbar">
@@ -37,7 +38,9 @@ const Navbar = () => {
         <IconButton disabled={search === ""}>
           <Search
             sx={{ color: variables.pinkred }}
-            onClick={() => {navigate(`/properties/search/${search}`)}}
+            onClick={() => {
+              navigate(`/properties/search/${search}`);
+            }}
           />
         </IconButton>
       </div>
@@ -62,10 +65,11 @@ const Navbar = () => {
             <Person sx={{ color: variables.darkgrey }} />
           ) : (
             <img
-              src={`http://localhost:3001/${user.profileImagePath.replace(
-                "public",
-                ""
-              )}`}
+              src={
+                user.profileImagePath
+                  ? `http://localhost:3001/${imagePath}`
+                  : "/assets/pp.png"
+              }
               alt="pp"
               style={{ objectFit: "cover", borderRadius: "50%" }}
             />

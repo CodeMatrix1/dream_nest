@@ -49,18 +49,20 @@ const ListingCard = ({
 
   const patchWishList = async () => {
     if (user?._id !== creator._id) {
-    const response = await fetch(
-      `http://localhost:3001/users/${user?._id}/${listingId}`,
-      {
-        method: "PATCH",
-        header: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const data = await response.json();
-    dispatch(setWishList(data.wishList));
-  } else { return }
+      const response = await fetch(
+        `http://localhost:3001/users/${user?._id}/${listingId}`,
+        {
+          method: "PATCH",
+          header: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      dispatch(setWishList(data.wishList));
+    } else {
+      return;
+    }
   };
 
   return (
@@ -75,32 +77,42 @@ const ListingCard = ({
           className="slider"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
-          {listingPhotoPaths?.map((photo, index) => (
-            <div key={index} className="slide">
-              <img
-                src={`http://localhost:3001/${photo?.replace("public", "")}`}
-                alt={`photo ${index + 1}`}
-              />
-              <div
-                className="prev-button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToPrevSlide(e);
-                }}
-              >
-                <ArrowBackIosNew sx={{ fontSize: "15px" }} />
+          {Array.isArray(listingPhotoPaths) && listingPhotoPaths.length > 0 ? (
+            listingPhotoPaths.map((photo, index) => (
+              <div key={index} className="slide">
+                <img
+                  src={
+                    typeof photo === "string" && photo.length > 0
+                      ? `http://localhost:3001/${photo.replace("public", "")}`
+                      : "/assets/slide.png"
+                  }
+                  alt="listing"
+                />
+                <div
+                  className="prev-button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToPrevSlide(e);
+                  }}
+                >
+                  <ArrowBackIosNew sx={{ fontSize: "15px" }} />
+                </div>
+                <div
+                  className="next-button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToNextSlide(e);
+                  }}
+                >
+                  <ArrowForwardIos sx={{ fontSize: "15px" }} />
+                </div>
               </div>
-              <div
-                className="next-button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToNextSlide(e);
-                }}
-              >
-                <ArrowForwardIos sx={{ fontSize: "15px" }} />
-              </div>
+            ))
+          ) : (
+            <div className="slide">
+              <img src="/assets/slide.png" alt="" />
             </div>
-          ))}
+          )}
         </div>
       </div>
 
