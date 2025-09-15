@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import "../styles/Navbar.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { setLogout } from "../redux/state";
+import { API_BASE_URL } from "../config";
 
 const Navbar = () => {
   const [dropdownMenu, setDropdownMenu] = useState(false);
@@ -67,7 +68,7 @@ const Navbar = () => {
             <img
               src={
                 user.profileImagePath
-                  ? `http://localhost:3001/${imagePath}`
+                  ? `${API_BASE_URL}/${imagePath}`
                   : "/assets/pp.png"
               }
               alt="pp"
