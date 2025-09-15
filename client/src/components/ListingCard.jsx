@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setWishList } from "../redux/state";
+import { API_BASE_URL } from "../config";
 
 const ListingCard = ({
   listingId,
@@ -50,7 +51,7 @@ const ListingCard = ({
   const patchWishList = async () => {
     if (user?._id !== creator._id) {
       const response = await fetch(
-        `http://localhost:3001/users/${user?._id}/${listingId}`,
+        `${API_BASE_URL}/users/${user?._id}/${listingId}`,
         {
           method: "PATCH",
           header: {
@@ -83,7 +84,7 @@ const ListingCard = ({
                 <img
                   src={
                     typeof photo === "string" && photo.length > 0
-                      ? `http://localhost:3001/${photo.replace("public", "")}`
+                      ? `${API_BASE_URL}/${photo.replace("public", "")}`
                       : "/assets/slide.png"
                   }
                   alt="listing"

@@ -21,8 +21,20 @@ app.use("/users", userRoutes)
 
 /* MONGOOSE SETUP */
 const PORT = 3001;
+
+// Validate Mongo connection string early for clearer errors
+const mongoUrl = process.env.MONGO_URL;
+if (!mongoUrl) {
+  console.error("Missing MONGO_URL in server/.env. Set your Atlas connection string.");
+  process.exit(1);
+}
+if (!/^mongodb(\+srv)?:\/\//.test(mongoUrl)) {
+  console.error("MONGO_URL must start with mongodb:// or mongodb+srv:// and include a valid hostname.");
+  process.exit(1);
+}
+
 mongoose
-  .connect(process.env.MONGO_URL, {
+  .connect(mongoUrl, {
     dbName: "Dream_Nest",
     useNewUrlParser: true,
     useUnifiedTopology: true,

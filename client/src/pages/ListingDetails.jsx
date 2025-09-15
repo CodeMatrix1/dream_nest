@@ -10,6 +10,7 @@ import Loader from "../components/Loader";
 import Navbar from "../components/Navbar";
 import { useSelector } from "react-redux";
 import Footer from "../components/Footer";
+import { API_BASE_URL } from "../config";
 
 const ListingDetails = () => {
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ const ListingDetails = () => {
   const getListingDetails = async () => {
     try {
       const response = await fetch(
-        `http://localhost:3001/properties/${listingId}`,
+        `${API_BASE_URL}/properties/${listingId}`,
         {
           method: "GET",
         }
@@ -74,7 +75,7 @@ const ListingDetails = () => {
         totalPrice: listing.price * dayCount,
       };
 
-      const response = await fetch("http://localhost:3001/bookings/create", {
+      const response = await fetch(`${API_BASE_URL}/bookings/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -107,7 +108,7 @@ const ListingDetails = () => {
             <img
               src={
                 item
-                  ? `http://localhost:3001/${item.replace("public", "")}`
+                  ? `${API_BASE_URL}/${item.replace("public", "")}`
                   : "/assets/default-listing.png"
               }
               alt="listing photo"
@@ -131,7 +132,7 @@ const ListingDetails = () => {
               listing.creator &&
               typeof listing.creator.profileImagePath === "string" &&
               listing.creator.profileImagePath.length > 0
-                ? `http://localhost:3001/${listing.creator.profileImagePath.replace(
+                ? `${API_BASE_URL}/${listing.creator.profileImagePath.replace(
                     "public",
                     ""
                   )}`
