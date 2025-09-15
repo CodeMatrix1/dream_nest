@@ -19,7 +19,7 @@ const Navbar = () => {
 
   const navigate = useNavigate();
 
-  const imagePath = user.profileImagePath
+  const imagePath = user?.user.profileImagePath
     ? user.profileImagePath.replace("public\\", "")
     : "/assets/pp.png"; // fallback image path
 

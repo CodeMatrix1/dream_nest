@@ -87,7 +87,7 @@ const ListingCard = ({
                       ? `${API_BASE_URL}/${photo.replace("public", "")}`
                       : "/assets/slide.png"
                   }
-                  alt="listing"
+                  alt=""
                 />
                 <div
                   className="prev-button"
